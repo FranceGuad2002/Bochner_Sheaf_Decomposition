@@ -20,7 +20,7 @@ The paper has two experimental parts, and the folders follow them:
 | Level | What it reproduces | Needs | Time |
 |---|---|---|---|
 | **[A](#a-regenerate-every-table-in-the-paper)** | all 23 tables in the paper, from the committed per-fold data | Python and 4 packages | about a minute |
-| **[B](#b-rerun-the-analysis-from-the-archived-raw-outputs)** | the per-fold data itself, from the archived outputs of the trained models | the Zenodo archive (6.4 GB) and the full environment | hours; a GPU helps for the conviction interventions |
+| **[B](#b-rerun-the-analysis-from-the-archived-raw-outputs)** | the per-fold data itself, from the archived outputs of the trained models | the Zenodo archive (6.8 GB) and the full environment | hours; a GPU helps for the conviction interventions |
 | **[C](#c-retrain-the-models)** | the trained models | the full environment; a GPU for the large datasets | about a minute per small-dataset model on CPU (Cornell, Wisconsin) |
 
 Run every command **from the repository root**, not from this folder.
@@ -76,24 +76,27 @@ first.
 
 ### 2. Data
 
-The trained models' raw outputs (`results/`, about 26,000 files) are too large for git and
+The trained models' raw outputs (`results/`, about 29,000 files) are too large for git and
 are archived on Zenodo: **https://zenodo.org/records/23080428**
 
 | File | Size | Unpacks to | Needed for |
 |---|---|---|---|
 | `results_forman_eigs.tar` | 5.5 GB | `results/forman_eigs/` | Forman profile: curvature eigenvalues per fold, layer and checkpoint |
 | `results_conviction.tar` | 0.9 GB | `results/model_weights/`, `results/node_*/` (and an unused `results/scalar_curvature_FMG/`) | Conviction: the frozen models, the conviction scores, predictions, confidences and saliencies |
+| `results_identity_sheaf.tar` | 0.4 GB | `results/*/<dataset>/IdentitySheaf/` | The identity-sheaf control of the conviction analysis: the same outputs for the 8 identity-sheaf models |
 
-Download both files into the **repository root** and unpack them there. The archives store
-paths as `results/...`, so they land in the right place:
+Download the three files into the **repository root** and unpack them there. The archives
+store paths as `results/...`, so they land in the right place, and they do not overlap:
 
 ```bash
 sha256sum -c <<'EOF'
 d81ded5226e1cbbff3cfe2de9859fc207304a39b709c188805290e8e51f83fcc  results_forman_eigs.tar
 65dcc3d149f175549e4960a95a5ab82d844b33f12a13d55b0e834755e0540629  results_conviction.tar
+8ce805359cde46673a32e8d710d2dd8812c2597b88694a1b5858ad9b3546244f  results_identity_sheaf.tar
 EOF
 tar -xf results_forman_eigs.tar
 tar -xf results_conviction.tar
+tar -xf results_identity_sheaf.tar
 ```
 
 You should now have `results/forman_eigs/` and `results/model_weights/` next to `exp/` and
@@ -110,6 +113,15 @@ bash exp/scripts/run_all_conviction_interventions.sh   # masking, gating, prunin
 bash exp/scripts/run_conviction_heatmap.sh             # observational correlations (CPU)
 bash exp/scripts/run_conviction_summary.sh             # per-dataset CSVs -> tables (seconds)
 python Bochner_code/conviction/make_perdataset_tables.py
+
+# Identity-sheaf control: the same pipeline for --model=IdentitySheaf
+python Bochner_code/conviction/conviction_heatmap.py --model=IdentitySheaf --normalised=true --map_type=identity
+python Bochner_code/conviction/conviction_masking_forward.py --model=IdentitySheaf --normalised=true \
+    --map_type=identity --conviction_score=last --intervention=masking --mask_mode=zero
+python Bochner_code/conviction/conviction_observational_table.py --configs=IdentitySheaf:true \
+    --tag=observational_summary_identity
+python Bochner_code/conviction/conviction_summary_tables.py --score=last --model=IdentitySheaf \
+    --normalised=true --exclude=cornell,wisconsin --tag_suffix=_identity
 ```
 
 These rewrite the committed per-fold CSVs and tables. Which trained models the conviction

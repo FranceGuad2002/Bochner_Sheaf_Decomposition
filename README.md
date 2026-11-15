@@ -15,7 +15,7 @@ It explains three levels of reproduction:
 - **A. Regenerate every table in the paper:** about a minute, on any machine, with
   `pip install` of four packages. No GPU, no training, no download.
 - **B. Rerun the analysis** from the trained models' raw outputs, archived on
-  [Zenodo](https://zenodo.org/records/23080428) (6.4 GB).
+  [Zenodo](https://zenodo.org/records/23080428) (6.8 GB).
 - **C. Retrain the models**, using the exact command for each of the 53 models in
   [`TRAINING_RUNS.md`](Bochner_code/TRAINING_RUNS.md), plus the identity-sheaf control
   models. The joint sheaf diffusion runs are the one exception, see
