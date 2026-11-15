@@ -144,17 +144,8 @@ bash exp/scripts/paper/train_forman_models.sh
 bash exp/scripts/paper/train_identity_sheaf_models.sh
 ```
 
-**The 21 joint sheaf diffusion runs (Tables 3 and 4) cannot be retrained from this release:**
-that model is the method of Hernandez Caralt et al. (2024) and its implementation is not
-included (asking for it raises a clear error, see `models/unavailable.py`). Their commands
-are kept, commented out, in `train_forman_models.sh`, and their archived outputs are on
-Zenodo, so levels A and B cover them in full.
-
 Then run level B, step 3. Retrained models are not bit-identical to the archived ones, since
 GPU arithmetic and library versions differ, but they agree within the spread across folds.
-For example, the Cornell conviction model retrained on CPU reaches 76.5 ± 9.7 % test
-accuracy against 81.1 ± 7.9 % for the archived GPU model, and the Cornell conviction and
-Forman results reproduce the archived ones within that noise.
 
 ---
 
@@ -210,3 +201,6 @@ three figures are theory diagrams and are not produced by code.
   `torch-householder` compiles a C++ extension, which on Windows needs the Visual Studio
   C++ Build Tools. Keep the repository in a short folder (see the note above).
 - **Not included:** `wandb/` (training logs). No credential is stored anywhere in the repository.
+- The joint sheaf diffusion model is not implemented in this public repository; see
+  Hernandez Caralt et al. (2024) for details on how to build it. Its archived outputs are on
+  Zenodo, so levels A and B still cover the tables that use it.

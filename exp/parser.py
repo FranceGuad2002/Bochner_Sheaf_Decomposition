@@ -69,8 +69,7 @@ def get_parser():
     parser.add_argument('--seed', type=int, default=43)
     parser.add_argument('--cuda', type=int, default=0)
     parser.add_argument('--folds', type=int, default=10)
-    # The Joint* names are accepted only so that asking for them gives a clear
-    # "not included in this release" message (see models/unavailable.py).
+    # The Joint* names are accepted only to give a clear error (see models/unavailable.py).
     parser.add_argument('--model', type=str, choices=['DiagSheaf', 'BundleSheaf', 'GeneralSheaf', 'BochnerSheaf',
                                                       'BochnerFlatSheaf', 'DiagSheafODE', 'BundleSheafODE',
                                                       'GeneralSheafODE', 'IdentitySheaf',

@@ -371,5 +371,5 @@ def test_permutation_equivariance_of_identity_sheaf_diffusion_on_texas(d):
 @pytest.mark.parametrize("name", ['JointSheafParams', 'JointSheafParamsAlt', 'JointSheafVanilla'])
 def test_joint_models_raise_a_clear_unavailable_error(name):
     from models.unavailable import JointModelUnavailable, unavailable_model
-    with pytest.raises(JointModelUnavailable, match="not included in this release"):
+    with pytest.raises(JointModelUnavailable, match="not implemented in this public repository"):
         unavailable_model(name)(None, {})

@@ -1,6 +1,5 @@
 #!/bin/bash
-# Trains the models behind the Forman-profile tables: the 22 GeneralSheaf runs
-# are run below; the 21 JointSheafParams runs are documented but commented out.
+# Trains the GeneralSheaf models behind the Forman-profile tables.
 # Generated from Bochner_code/TRAINING_RUNS.md — see it for where each
 # command comes from. Run from the repository root, with the environment active:
 #     bash exp/scripts/paper/train_forman_models.sh
@@ -396,13 +395,8 @@ python -m exp.run \
     --save_norms=False \
     --save_others=True
 
-# ---------------------------------------------------------------------------
-# The 21 JointSheafParams runs below are recorded for reference only and are
-# commented out: the joint sheaf diffusion model (Hernandez Caralt et al., 2024)
-# is not included in this release (see models/unavailable.py). Their outputs are
-# in the Zenodo record listed in the README, from which the analysis scripts
-# rebuild the Joint tables.
-# ---------------------------------------------------------------------------
+# JointSheafParams runs, for reference: the joint sheaf diffusion model is not
+# implemented in this public repository (see Hernandez Caralt et al., 2024).
 
 # # Amazon Ratings — JointSheafParams (identity first maps), unnormalised, d=5, 5 layers
 # python -m exp.run \

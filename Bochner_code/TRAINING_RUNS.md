@@ -748,13 +748,9 @@ python -m exp.run \
 
 ## Forman profile — JointSheafParams — 21 runs
 
-> **Not runnable from this release.** The joint sheaf diffusion model is the method of
-> Hernandez Caralt et al. (2024) and its implementation is not included here; asking
-> `exp.run` for it raises a clear "not included in this release" error (see
-> `models/unavailable.py`). The runs are listed for completeness, and their commands are
-> kept, commented out, in `exp/scripts/paper/train_forman_models.sh`. Their outputs are in
-> the Zenodo record listed in the top-level README, and the Forman analysis scripts rebuild
-> Tables 3 and 4 from them.
+The joint sheaf diffusion model is not implemented in this public repository; see
+Hernandez Caralt et al. (2024) for details. The runs are listed for completeness, and their
+outputs are in the Zenodo record.
 
 Identity first maps (`learn_first_maps=False`), unnormalised (Table 3) and normalised (Table 4). The normalised regime is less stable and was trained at lower stalk dimension and depth; Tolokers is absent from Table 4 because its training was unstable.
 

@@ -8,9 +8,10 @@ This repository is a **fork of [twitter-research/neural-sheaf-diffusion](https:/
 code provides the sheaf neural network models and the training loop; this fork adds the
 instrumentation needed to observe a trained network, and the analysis the paper reports.
 
-## ➜ For reviewers: start at [`Bochner_code/README.md`](Bochner_code/README.md)
+## How to use this code
 
-It explains three levels of reproduction:
+Start at [`Bochner_code/README.md`](Bochner_code/README.md). It explains three levels of
+reproduction:
 
 - **A. Regenerate every table in the paper:** about a minute, on any machine, with
   `pip install` of four packages. No GPU, no training, no download.
@@ -18,8 +19,7 @@ It explains three levels of reproduction:
   [Zenodo](https://zenodo.org/records/23080428) (6.8 GB).
 - **C. Retrain the models**, using the exact command for each of the 53 models in
   [`TRAINING_RUNS.md`](Bochner_code/TRAINING_RUNS.md), plus the identity-sheaf control
-  models. The joint sheaf diffusion runs are the one exception, see
-  [Not included in this release](#not-included-in-this-release).
+  models.
 
 **On Windows, unpack or clone the repository into a short folder such as `C:\nsd`**: some
 file paths are long, and Windows by default refuses paths over 260 characters.
@@ -41,41 +41,26 @@ results/                         raw outputs of the trained models (on Zenodo, n
 
 ## What this fork changes in the upstream code
 
-Measured against the last upstream commit (`11e21b5`), ignoring line endings, for the
-Python code: **+2144 / −46 lines in 11 files** (9 modified, 2 new), almost entirely
-additive. Each modified upstream file says so in its header. The paper's analysis code
-(`Bochner_code/`) and the drivers in `exp/scripts/` (except the upstream example scripts)
-are new.
+The changes to the upstream code are almost entirely additions, and each modified upstream
+file says so in its header. The paper's analysis code (`Bochner_code/`) and the drivers in
+`exp/scripts/` (except the upstream example scripts) are new.
 
-| File | Lines | What it adds |
-|---|---|---|
-| `exp/run.py` | +618 −22 | per-epoch checkpoints and the code that saves Forman eigenvalues, node norms, confidences, predictions, saliencies and weights into `results/` |
-| `utils/conviction.py` | +630 (new) | the shared conviction backend: loading checkpoints, ranking nodes, and the three interventions (masking, gating, pruning) |
-| `models/disc_models.py` | +444 −10 | the Bochner, flat Bochner and identity-sheaf models; Laplacian and node-norm instrumentation of the diffusion layers; the message-gating hook used by the conviction interventions |
-| `models/test_disc_models.py` | +143 −1 | tests for the identity-sheaf model and for the "not included" error below |
-| `models/laplacian_builders.py` | +85 −6 | the flat Bochner Laplacian builder and the switch between normalised and unnormalised Laplacians |
-| `utils/heterophilic.py` | +82 −2 | loaders for the newer heterophilic benchmarks (Roman Empire, Amazon Ratings, Minesweeper, Tolokers, Questions) |
-| `models/sheaf_models.py` | +60 −1 | the per-node and diagonal edge learners used by the Bochner models |
-| `models/unavailable.py` | +40 (new) | the "not included in this release" error for the joint sheaf diffusion models |
-| `exp/parser.py` | +38 −2 | the `--save_*`, `--save_others`, `--maps_lr` and checkpoint flags |
-| `models/sheaf_base.py` | +2 −1 | |
-| `models/cont_models.py` | +2 −1 | |
+| File | What it adds |
+|---|---|
+| `exp/run.py` | per-epoch checkpoints and the code that saves Forman eigenvalues, node norms, confidences, predictions, saliencies and weights into `results/` |
+| `utils/conviction.py` (new) | the shared conviction backend: loading checkpoints, ranking nodes, and the three interventions (masking, gating, pruning) |
+| `models/disc_models.py` | the Bochner, flat Bochner and identity-sheaf models; Laplacian and node-norm instrumentation of the diffusion layers; the message-gating hook used by the conviction interventions |
+| `models/laplacian_builders.py` | the flat Bochner Laplacian builder and the switch between normalised and unnormalised Laplacians |
+| `models/sheaf_models.py` | the per-node and diagonal edge learners used by the Bochner models |
+| `utils/heterophilic.py` | loaders for the newer heterophilic benchmarks (Roman Empire, Amazon Ratings, Minesweeper, Tolokers, Questions) |
+| `exp/parser.py` | the `--save_*`, `--save_others`, `--maps_lr` and checkpoint flags |
+| `models/test_disc_models.py` | tests for the identity-sheaf model |
+| `models/sheaf_base.py`, `models/cont_models.py` | small adjustments to the model arguments |
 
 **The upstream sheaf Laplacian construction is unchanged:** `lib/`, `utils/classic.py`,
 `definitions.py`, `main.py`, `models/orthogonal.py`, `models/positional_encodings.py`,
 `config/`, the environment files and the upstream example scripts are identical to the
 original.
-
-## Not included in this release
-
-**Joint sheaf diffusion** (`JointSheafParams`, used for Tables 3 and 4 of the paper) is the
-method of Hernandez Caralt et al., *Joint Diffusion Processes as an Inductive Bias in Sheaf
-Neural Networks* (GRaM workshop, 2024). Its implementation is not ours to redistribute and is
-not included; it is available from the authors of that work. Asking `exp.run` for it raises a
-clear "not included in this release" error. Everything downstream is still reproducible:
-the Joint runs' outputs are in the Zenodo archive and their per-fold data is committed here,
-so levels A and B of the reproduction guide regenerate Tables 3 and 4 exactly. Their training
-commands are kept, commented out, in `exp/scripts/paper/train_forman_models.sh`.
 
 ## License
 
