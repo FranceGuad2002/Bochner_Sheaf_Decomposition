@@ -1,0 +1,30 @@
+# ── build artefacts, editor state, job logs ───────────────────────────────────
+*__pycache__/
+*.py[cod]
+*.pytest_cache
+.idea/
+.vscode/
+.venv/
+*.DS_Store
+logs/
+
+# ── personal notes, not part of the project ───────────────────────────────────
+to_read_list.md
+
+# ── Weights & Biases run telemetry ────────────────────────────────────────────
+# Per-step training logs. Every number in the paper comes from results/ and from
+# the CSVs under Bochner_code/*/outputs/, not from W&B. No
+# credential is stored anywhere in the tree.
+wandb/
+
+# ── large raw arrays ──────────────────────────────────────────────────────────
+# results/ (~6.3 GB, ~26,000 files) holds the raw per-fold eigenvalue and
+# node-norm arrays the analysis scripts consume. It is archived on Zenodo, not in
+# git. The derived CSVs under Bochner_code/*/outputs/ ARE
+# tracked, so every table in the paper regenerates without it.
+results/*
+!results/images/
+
+# ── figures the analysis scripts render ───────────────────────────────────────
+# Diagnostic plots; the paper uses none of them (its figures are theory diagrams).
+Bochner_code/*/outputs/**/*.pdf
