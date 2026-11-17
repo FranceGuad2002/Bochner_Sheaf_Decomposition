@@ -1,6 +1,5 @@
 # Copyright 2022 Twitter, Inc.
 # SPDX-License-Identifier: Apache-2.0
-# Modified by the authors of the Bochner decomposition paper; see README.md for the changes.
 
 import torch
 import torch.nn.functional as F
@@ -51,41 +50,8 @@ class LocalConcatSheafLearner(SheafLearner):
         maps = self.linear1(torch.cat([x_row, x_col], dim=1))
         maps = self.act(maps)
 
-        #print(maps,edge_index)
-
         # sign = maps.sign()
         # maps = maps.abs().clamp(0.05, 1.0) * sign
-        # BE CAREFUL, THIS IS ROW-MAJOR ORDER, NOT COLUMN-MAJOR
-        # [a11, a12, a21, a22] -> [[a11, a21], [a12, a22]]
-        if len(self.out_shape) == 2:
-            return maps.view(-1, self.out_shape[0], self.out_shape[1])
-        else:
-            return maps.view(-1, self.out_shape[0])
-
-
-class LocalNodeSheafLearner(SheafLearner):
-    """Learns one map per node from that node's own features, rather than one map per edge from
-    a concatenated pair. Used to build a per-vertex map O_v shared by all of v's incident edges
-    (the 'flat' Bochner sheaf), so it takes a single node feature matrix, not an edge_index pair.
-    """
-
-    def __init__(self, in_channels: int, out_shape: Tuple[int, ...], sheaf_act="tanh"):
-        super(LocalNodeSheafLearner, self).__init__()
-        assert len(out_shape) in [1, 2]
-        self.out_shape = out_shape
-        self.linear1 = torch.nn.Linear(in_channels, int(np.prod(out_shape)), bias=False)
-
-        if sheaf_act == 'id':
-            self.act = lambda x: x
-        elif sheaf_act == 'tanh':
-            self.act = torch.tanh
-        elif sheaf_act == 'elu':
-            self.act = F.elu
-        else:
-            raise ValueError(f"Unsupported act {sheaf_act}")
-
-    def forward(self, x):
-        maps = self.act(self.linear1(x))
 
         if len(self.out_shape) == 2:
             return maps.view(-1, self.out_shape[0], self.out_shape[1])
@@ -121,9 +87,6 @@ class LocalConcatSheafLearnerVariant(SheafLearner):
             raise ValueError(f"Unsupported act {sheaf_act}")
 
     def forward(self, x, edge_index):
-
-        """Seleziona le righe corrispondenti a row e col da x, concatena le caratteristiche e passa attraverso un layer lineare e un'attivazione."""
-
         row, col = edge_index
 
         x_row = torch.index_select(x, dim=0, index=row)
@@ -146,10 +109,6 @@ class LocalConcatSheafLearnerVariant(SheafLearner):
 
 
 class AttentionSheafLearner(SheafLearner):
-
-    """Utilizza l'attention per costruire le mappe di restrizione.
-    Concatena le caratteristiche dei nodi, le passa attraverso un layer lineare
-    e poi applica softmax per ottenere le mappe di restrizione."""
 
     def __init__(self, in_channels, d):
         super(AttentionSheafLearner, self).__init__()
@@ -191,25 +150,6 @@ class EdgeWeightLearner(SheafLearner):
         self.full_left_right_idx, _ = lap.compute_left_right_map_index(edge_index, full_matrix=True)
 
 
-class DiagEdgeWeightLearner(SheafLearner):
-    """Learns a per-channel diagonal edge scale Sigma_e = scale * sigmoid(linear(h_u + h_v)) in
-    (0, scale)^d. Sigma_{(u,v)} == Sigma_{(v,u)} holds automatically since h_u + h_v is symmetric
-    in (u, v) -- no reverse-edge bookkeeping needed.
-    """
-
-    def __init__(self, in_channels: int, d: int, scale: float = 1.0):
-        super(DiagEdgeWeightLearner, self).__init__()
-        self.in_channels = in_channels
-        self.d = d
-        self.scale = scale
-        self.linear1 = torch.nn.Linear(in_channels, d, bias=False)
-
-    def forward(self, x, edge_index):
-        row, col = edge_index
-        h_sum = torch.index_select(x, dim=0, index=row) + torch.index_select(x, dim=0, index=col)
-        return self.scale * torch.sigmoid(self.linear1(h_sum))
-
-
 class QuadraticFormSheafLearner(SheafLearner):
     """Learns a sheaf by concatenating the local node features and passing them through a linear layer + activation."""
 
@@ -231,3 +171,4 @@ class QuadraticFormSheafLearner(SheafLearner):
             return torch.tanh(maps).view(-1, self.out_shape[0], self.out_shape[1])
         else:
             return torch.tanh(maps).view(-1, self.out_shape[0])
+

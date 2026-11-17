@@ -30,8 +30,7 @@ from exp.parser import get_parser
 from models.positional_encodings import append_top_k_evectors
 from models.cont_models import DiagSheafDiffusion, BundleSheafDiffusion, GeneralSheafDiffusion
 from models.disc_models import (DiscreteDiagSheafDiffusion, DiscreteBundleSheafDiffusion,
-    DiscreteGeneralSheafDiffusion, DiscreteIdentitySheafDiffusion,
-    DiscreteBochnerSheafDiffusion, DiscreteBochnerFlatSheafDiffusion)
+    DiscreteGeneralSheafDiffusion, DiscreteIdentitySheafDiffusion)
 from models.unavailable import JOINT_SHEAF_MODELS, JointModelUnavailable
 from utils.heterophilic import get_dataset, get_fixed_splits
 
@@ -715,10 +714,6 @@ if __name__ == '__main__':
         model_cls = DiscreteGeneralSheafDiffusion
     elif args.model == 'IdentitySheaf':
         model_cls = DiscreteIdentitySheafDiffusion
-    elif args.model == 'BochnerSheaf':
-        model_cls = DiscreteBochnerSheafDiffusion
-    elif args.model == 'BochnerFlatSheaf':
-        model_cls = DiscreteBochnerFlatSheafDiffusion
     elif args.model in JOINT_SHEAF_MODELS:
         raise JointModelUnavailable(args.model)
     else:
