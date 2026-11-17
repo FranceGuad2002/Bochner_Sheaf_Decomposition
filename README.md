@@ -46,14 +46,14 @@ Their original README is kept, unchanged, at the [end of this page](#original-ne
 
 ## Getting started
 
-We ran everything on Linux with an NVIDIA GPU. To get the same environment:
+To get the environment we used:
 
 ```bash
 conda env create -f Bochner_code/environments/environment_nsd_exact.yml
 conda activate nsd
 ```
 
-If you only have a CPU, use the upstream environment and add the analysis packages:
+Without CUDA, use the upstream environment and add the analysis packages:
 
 ```bash
 conda env create -f environment_cpu.yml
@@ -70,25 +70,23 @@ paths over 260 characters by default.
 
 ## Quick start
 
-Train a sheaf model on Cornell and save everything the analysis needs:
+Train one of the paper's models, the sheaf network on Cornell:
 
 ```bash
 python -m exp.run --dataset=cornell --model=GeneralSheaf --normalised=True \
     --d=2 --layers=2 --hidden_channels=16 --epochs=500 --lr=0.02 \
-    --checkpoint_epochs=0,1,5,15,50,200 --save_others=True
+    --weight_decay=0.0006914841722570725 --sheaf_decay=0.00031764232712732976 \
+    --dropout=0.5 --input_dropout=0.2 \
+    --checkpoint_epochs=0,1,5,15,50,200 --save_norms=False --save_others=True
 ```
-
-This takes a few minutes on a CPU and writes into `results/` the model weights, the
-eigenvalues of the Forman curvature at each layer and checkpoint, and the per-node norms,
-confidences, predictions and saliencies of each of the ten folds.
 
 ## Reproducing the paper
 
 There are three ways in, depending on how far back you want to go. The full guide is in
 [`Bochner_code/README.md`](Bochner_code/README.md).
 
-1. **Regenerate the tables.** All 23 tables of the paper can be rebuilt in about a minute
-   from the per-fold data committed here, with four pip packages and no GPU.
+1. **Regenerate the tables.** All 23 tables of the paper can be rebuilt from the per-fold
+   data committed here, with four pip packages.
 2. **Rerun the analysis.** The raw outputs of the trained models are on
    [Zenodo](https://doi.org/10.5281/zenodo.23080428) (6.8 GB). Unpack them at the root of
    the repository and run the analysis scripts.

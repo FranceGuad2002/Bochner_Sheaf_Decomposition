@@ -1,48 +1,44 @@
-# Bochner decomposition for cellular sheaves — reproduction guide
+# Bochner decomposition: how to use this code
 
-This folder contains everything specific to the paper: the analysis
-code, the derived data, and every table the paper reports. The models and training loop
-it builds on are in the repository root, a fork of
-[twitter-research/neural-sheaf-diffusion](https://github.com/twitter-research/neural-sheaf-diffusion)
-(see the root [`README.md`](../README.md) for what the fork changes).
+This folder holds everything that is specific to the paper: the analysis code, the derived
+data, and the tables. The models and the training loop are in the root of the repository,
+which is a fork of
+[Neural Sheaf Diffusion](https://github.com/twitter-research/neural-sheaf-diffusion); the
+[main README](../README.md) lists what we changed there.
 
-The paper has two experimental parts, and the folders follow them:
+The two experiments of the paper each have their own folder:
 
-| Folder | Content |
+| Folder | What it contains |
 |---|---|
-| `conviction/` | **Conviction**: node importance in a trained sheaf neural network, measured by intervening on the frozen model (Bochner term) |
-| `forman_profile/` | **Forman profile**: per-node spectra of the curvature block, compared with a topological reference (Forman term) |
-| [`TRAINING_RUNS.md`](TRAINING_RUNS.md) | every trained model the paper uses, with the exact command that produced it |
-| `environments/`, `requirements-*.txt` | the environments described below |
+| `conviction/` | the conviction experiment: how much a trained sheaf network relies on each node, measured by intervening on the frozen model (the Bochner term) |
+| `forman_profile/` | the Forman profile experiment: the spectra of the curvature block at every node, compared with a topological reference (the Forman term) |
+| [`TRAINING_RUNS.md`](TRAINING_RUNS.md) | the models the paper uses, and how to train them |
+| `environments/`, `requirements-*.txt` | the environments |
 
-## Three levels of reproduction
+You can use the code in three ways, depending on how far back you want to start:
 
-| Level | What it reproduces | Needs | Time |
-|---|---|---|---|
-| **[A](#a-regenerate-every-table-in-the-paper)** | all 23 tables in the paper, from the committed per-fold data | Python and 4 packages | about a minute |
-| **[B](#b-rerun-the-analysis-from-the-archived-raw-outputs)** | the per-fold data itself, from the archived outputs of the trained models | the Zenodo archive (6.8 GB) and the full environment | hours; a GPU helps for the conviction interventions |
-| **[C](#c-retrain-the-models)** | the trained models | the full environment; a GPU for the large datasets | about a minute per small-dataset model on CPU (Cornell, Wisconsin) |
+1. **Regenerate the tables** from the data committed in the repository.
+2. **Rerun the analysis** from the outputs of the trained models, which are on Zenodo.
+3. **Retrain the models** yourself.
 
-Run every command **from the repository root**, not from this folder.
+Run every command from the root of the repository, not from this folder.
 
-> **On Windows, first unpack or clone the repository into a short folder such as `C:\nsd`.**
-> Some file paths in this repository are long, and Windows by default refuses paths longer
-> than 260 characters including the folder they sit in. In a deep folder (for example
-> `C:\Users\<name>\Downloads\...`) those files fail to unpack and the scripts stop with
-> `FileNotFoundError`. For a clone: `git clone -c core.longpaths=true <url> C:\nsd`.
-> Linux and macOS are not affected.
+On Windows, clone the repository into a short folder such as `C:\nsd`
+(`git clone -c core.longpaths=true <url> C:\nsd`). Some paths in the repository are long,
+and Windows refuses paths over 260 characters by default, so in a deep folder the scripts
+stop with `FileNotFoundError`. Linux and macOS are not affected.
 
 ---
 
-## A. Regenerate every table in the paper
+## 1. Regenerate the tables
 
-No GPU, no training, no download: the per-fold data the tables are computed from is
-committed under `*/outputs/`. Any Python ≥ 3.9 works.
+The per-fold data the tables are computed from is committed under `*/outputs/`, so all you
+need is Python 3.9 or later and four packages:
 
 ```bash
 pip install -r Bochner_code/requirements-tables.txt
 
-# Forman profile: 8 global tables + 3 per-dataset tables
+# Forman profile: 8 global tables and 3 per-dataset tables
 python Bochner_code/forman_profile/aggregate_forman_global.py
 python Bochner_code/forman_profile/generate_forman_tables.py
 python Bochner_code/forman_profile/make_forman_perdataset_tables.py
@@ -53,40 +49,38 @@ python Bochner_code/conviction/make_perdataset_tables.py
 python Bochner_code/conviction/conviction_observational_table.py
 ```
 
-**Expected result:** every regenerated file is byte-identical to the committed one, so
-`git status` reports no change. Each table's numbers equal those of the corresponding table
-in the paper; the paper's copies differ only in hand-adjusted captions and cell
-shading. [Where each table comes from](#where-each-table-comes-from) maps every paper label
-to its file.
+The files you get are identical to the committed ones, so `git status` shows no change. The
+numbers are those of the paper; only the captions and the cell shading of the paper's
+copies were adjusted by hand. [Where each table comes from](#where-each-table-comes-from)
+tells you which file is which table.
 
 ---
 
-## B. Rerun the analysis from the archived raw outputs
+## 2. Rerun the analysis
 
-### 1. Environment
+### The environment
 
-| Machine | Setup |
+| Setup | Command |
 |---|---|
-| Linux with an NVIDIA GPU (what the paper used) | `conda env create -f Bochner_code/environments/environment_nsd_exact.yml` (Python 3.9.9, torch 2.5.1 + CUDA 12.1, PyG 2.6.1) |
-| CPU only | the upstream environment plus the analysis libraries:<br>`conda env create -f environment_cpu.yml`<br>`conda activate nsd`<br>`pip install -r Bochner_code/requirements-analysis.txt` |
+| the environment we used | `conda env create -f Bochner_code/environments/environment_nsd_exact.yml` (Python 3.9.9, torch 2.5.1 with CUDA 12.1, PyG 2.6.1) |
+| without CUDA | the upstream environment plus the analysis libraries:<br>`conda env create -f environment_cpu.yml`<br>`conda activate nsd`<br>`pip install -r Bochner_code/requirements-analysis.txt` |
 
-Both create an environment called `nsd`; activate it before running anything. Training
-(level C) reports to Weights & Biases; without an account, run `export WANDB_MODE=disabled`
-first.
+Both create an environment called `nsd`. Training logs go to Weights & Biases; without an
+account, run `export WANDB_MODE=disabled` first.
 
-### 2. Data
+### The data
 
-The trained models' raw outputs (`results/`, about 29,000 files) are too large for git and
-are archived on Zenodo: **https://zenodo.org/records/23080428**
+The raw outputs of the trained models (about 29,000 files) are too large for git, so they
+are on Zenodo: https://doi.org/10.5281/zenodo.23080428
 
-| File | Size | Unpacks to | Needed for |
+| File | Size | Unpacks to | What it is for |
 |---|---|---|---|
-| `results_forman_eigs.tar` | 5.5 GB | `results/forman_eigs/` | Forman profile: curvature eigenvalues per fold, layer and checkpoint |
-| `results_conviction.tar` | 0.9 GB | `results/model_weights/`, `results/node_*/` (and an unused `results/scalar_curvature_FMG/`) | Conviction: the frozen models, the conviction scores, predictions, confidences and saliencies |
-| `results_identity_sheaf.tar` | 0.4 GB | `results/*/<dataset>/IdentitySheaf/` | The identity-sheaf control of the conviction analysis: the same outputs for the 8 identity-sheaf models |
+| `results_forman_eigs.tar` | 5.5 GB | `results/forman_eigs/` | Forman profile: the curvature eigenvalues for every fold, layer and checkpoint |
+| `results_conviction.tar` | 0.9 GB | `results/model_weights/`, `results/node_*/` | conviction: the frozen models, and the scores, predictions, confidences and saliencies |
+| `results_identity_sheaf.tar` | 0.4 GB | `results/*/<dataset>/IdentitySheaf/` | the same outputs for the eight identity-sheaf models of the control experiment |
 
-Download the three files into the **repository root** and unpack them there. The archives
-store paths as `results/...`, so they land in the right place, and they do not overlap:
+Download the three files into the root of the repository. The archives store their paths as
+`results/...` and don't overlap, so they unpack to the right place:
 
 ```bash
 sha256sum -c <<'EOF'
@@ -100,21 +94,21 @@ tar -xf results_identity_sheaf.tar
 ```
 
 You should now have `results/forman_eigs/` and `results/model_weights/` next to `exp/` and
-`models/`, each with one sub-folder per dataset (`results/model_weights/cornell/…`).
+`models/`, each with one folder per dataset.
 
-### 3. Run
+### Running the analysis
 
 ```bash
-# Forman profile (CPU): eigenvalues -> per-fold CSVs -> the 8 global and 3 per-dataset tables
+# Forman profile: eigenvalues -> per-fold CSVs -> the global and per-dataset tables
 bash exp/scripts/run_forman_global.sh
 
 # Conviction
-bash exp/scripts/run_all_conviction_interventions.sh   # masking, gating, pruning on the frozen models
-bash exp/scripts/run_conviction_heatmap.sh             # observational correlations (CPU)
-bash exp/scripts/run_conviction_summary.sh             # per-dataset CSVs -> tables (seconds)
+bash exp/scripts/run_all_conviction_interventions.sh   # masking, gating and pruning on the frozen models
+bash exp/scripts/run_conviction_heatmap.sh             # observational correlations
+bash exp/scripts/run_conviction_summary.sh             # per-dataset CSVs -> tables
 python Bochner_code/conviction/make_perdataset_tables.py
 
-# Identity-sheaf control: the same pipeline for --model=IdentitySheaf
+# The identity-sheaf control: the same pipeline for --model=IdentitySheaf
 python Bochner_code/conviction/conviction_heatmap.py --model=IdentitySheaf --normalised=true --map_type=identity
 python Bochner_code/conviction/conviction_masking_forward.py --model=IdentitySheaf --normalised=true \
     --map_type=identity --conviction_score=last --intervention=masking --mask_mode=zero
@@ -124,18 +118,15 @@ python Bochner_code/conviction/conviction_summary_tables.py --score=last --model
     --normalised=true --exclude=cornell,wisconsin --tag_suffix=_identity
 ```
 
-These rewrite the committed per-fold CSVs and tables. Which trained models the conviction
-scripts load is listed in [`conviction/conviction_manifest.txt`](conviction/conviction_manifest.txt),
-one line per model.
+This rewrites the committed CSVs and tables. Which trained models the conviction scripts
+load is listed in [`conviction/conviction_manifest.txt`](conviction/conviction_manifest.txt).
 
 ---
 
-## C. Retrain the models
+## 3. Retrain the models
 
-[`TRAINING_RUNS.md`](TRAINING_RUNS.md) lists all 53 trained models (10 for conviction, 43
-for the Forman profile), what each is used for, and the exact command that produced it. The
-same commands are collected in scripts, which write into `results/`; the third trains the
-8 identity-sheaf control models of the conviction analysis:
+[`TRAINING_RUNS.md`](TRAINING_RUNS.md) describes the models and the settings of each. The
+commands are collected in three scripts that write into `results/`:
 
 ```bash
 export WANDB_MODE=disabled
@@ -144,63 +135,68 @@ bash exp/scripts/paper/train_forman_models.sh
 bash exp/scripts/paper/train_identity_sheaf_models.sh
 ```
 
-Then run level B, step 3. Retrained models are not bit-identical to the archived ones, since
-GPU arithmetic and library versions differ, but they agree within the spread across folds.
+Then go on with the analysis in step 2. A retrained model is not bit-identical to the
+archived one, since GPU arithmetic and library versions differ, but they agree within the
+spread across folds.
 
 ---
 
 ## Where each table comes from
 
-**Forman profile.** All tables are written to `forman_profile/outputs/summary_tables/`.
+### Forman profile
 
-| Paper label | File | Script |
+The tables are written to `forman_profile/outputs/summary_tables/`.
+
+| Table in the paper | File | Script |
 |---|---|---|
-| `tab:global_general_norm` (body and appendix) | `table1_general_norm.tex` | `generate_forman_tables.py` |
-| `tab:global_general_unnorm` | `table2_general_unnorm.tex` | 〃 |
-| `tab:global_joint_unnorm` | `table3_joint_unnorm.tex` | 〃 |
-| `tab:global_joint_norm` | `table4_joint_norm.tex` | 〃 |
-| `tab:global_general_other_norm` | `table5_general_other_norm.tex` | 〃 |
-| `tab:global_general_other_unnorm` | `table6_general_other_unnorm.tex` | 〃 |
-| `tab:global_cross_a` | `table7_cross_a.tex` | 〃 |
-| `tab:global_cross_b` | `table8_cross_b.tex` | 〃 |
+| `tab:global_general_norm` | `table1_general_norm.tex` | `generate_forman_tables.py` |
+| `tab:global_general_unnorm` | `table2_general_unnorm.tex` | `generate_forman_tables.py` |
+| `tab:global_joint_unnorm` | `table3_joint_unnorm.tex` | `generate_forman_tables.py` |
+| `tab:global_joint_norm` | `table4_joint_norm.tex` | `generate_forman_tables.py` |
+| `tab:global_general_other_norm` | `table5_general_other_norm.tex` | `generate_forman_tables.py` |
+| `tab:global_general_other_unnorm` | `table6_general_other_unnorm.tex` | `generate_forman_tables.py` |
+| `tab:global_cross_a` | `table7_cross_a.tex` | `generate_forman_tables.py` |
+| `tab:global_cross_b` | `table8_cross_b.tex` | `generate_forman_tables.py` |
 | `tab:perds_rm_norm` | `perds_rm_norm.tex` | `make_forman_perdataset_tables.py` |
-| `tab:perds_citeseer_unnorm` | `perds_citeseer_unnorm.tex` | 〃 |
-| `tab:perds_questions_joint_unnorm` | `perds_questions_joint_unnorm.tex` | 〃 |
+| `tab:perds_citeseer_unnorm` | `perds_citeseer_unnorm.tex` | `make_forman_perdataset_tables.py` |
+| `tab:perds_questions_joint_unnorm` | `perds_questions_joint_unnorm.tex` | `make_forman_perdataset_tables.py` |
 
-**Conviction.** All tables are written to `conviction/outputs/summary_tables/`.
+### Conviction
 
-| Paper label | File | Script |
+The tables are written to `conviction/outputs/summary_tables/`.
+
+| Table in the paper | File | Script |
 |---|---|---|
-| `tab:conv_fwd_masking-zero_last` (body) | `forward_masking-zero_…conv-last.tex` | `conviction_summary_tables.py` |
-| `tab:conv_fwd_masking-mean_last` | `forward_masking-mean_…conv-last.tex` | 〃 |
-| `tab:conv_fwd_masking-zero_avg_z` | `forward_masking-zero_…conv-avg_z.tex` | 〃 |
-| `tab:conv_fwd_gating-hard_last` | `forward_gating-hard_…conv-last.tex` | 〃 |
-| `tab:conv_soft_last` | `soft_gating_…conv-last.tex` | 〃 |
-| `tab:conv_fwd_pruning_last` | `forward_pruning_…conv-last.tex` | 〃 |
-| `tab:conv_dec_masking-zero_last` | `decile_masking-zero_…conv-last.tex` | 〃 |
-| `tab:conv_prune_edges_last` | `prune_edges_…conv-last.tex` | 〃 |
-| `tab:conv_prune_evd_last` | `prune_edges_vs_drop_…conv-last.tex` | 〃 |
+| `tab:conv_fwd_masking-zero_last` | `forward_masking-zero_…conv-last.tex` | `conviction_summary_tables.py` |
+| `tab:conv_fwd_masking-mean_last` | `forward_masking-mean_…conv-last.tex` | `conviction_summary_tables.py` |
+| `tab:conv_fwd_masking-zero_avg_z` | `forward_masking-zero_…conv-avg_z.tex` | `conviction_summary_tables.py` |
+| `tab:conv_fwd_gating-hard_last` | `forward_gating-hard_…conv-last.tex` | `conviction_summary_tables.py` |
+| `tab:conv_soft_last` | `soft_gating_…conv-last.tex` | `conviction_summary_tables.py` |
+| `tab:conv_fwd_pruning_last` | `forward_pruning_…conv-last.tex` | `conviction_summary_tables.py` |
+| `tab:conv_dec_masking-zero_last` | `decile_masking-zero_…conv-last.tex` | `conviction_summary_tables.py` |
+| `tab:conv_prune_edges_last` | `prune_edges_…conv-last.tex` | `conviction_summary_tables.py` |
+| `tab:conv_prune_evd_last` | `prune_edges_vs_drop_…conv-last.tex` | `conviction_summary_tables.py` |
 | `tab:conv_perds_high` | `perdataset_masking-zero_high.tex` | `make_perdataset_tables.py` |
-| `tab:conv_perds_low` | `perdataset_masking-zero_low.tex` | 〃 |
+| `tab:conv_perds_low` | `perdataset_masking-zero_low.tex` | `make_perdataset_tables.py` |
 | `tab:conv_observational` | `observational_summary.tex` | `conviction_observational_table.py` |
 
-The same folder holds 11 further tables the paper does not cite: the robustness variants
-(the `conv-avg` score, `masking-mean` and other deciles, `prune_components`). The paper's
-three figures are theory diagrams and are not produced by code.
+The same folder has eleven more tables that the paper doesn't cite (robustness variants
+such as the `conv-avg` score and `masking-mean`). The three figures of the paper are
+diagrams, and no code produces them.
 
 ---
 
 ## Good to know
 
-- **Cornell and Wisconsin are left out of the conviction aggregates**, because their training
-  pools are too small for a percentage budget to mean anything (1% is a single node). The
+- Cornell and Wisconsin are left out of the conviction aggregates, because their training
+  sets are too small for a percentage budget to mean anything (1% is a single node). The
   `--exclude=cornell,wisconsin` flag that does this is set in
-  `exp/scripts/run_conviction_summary.sh`, not in the Python script's defaults, so call the
-  wrapper rather than the script directly.
-- **Windows, levels B and C.** Linux (or WSL) is recommended: the upstream dependency
-  `torch-householder` compiles a C++ extension, which on Windows needs the Visual Studio
-  C++ Build Tools. Keep the repository in a short folder (see the note above).
-- **Not included:** `wandb/` (training logs). No credential is stored anywhere in the repository.
+  `exp/scripts/run_conviction_summary.sh`, so call that script rather than the Python file
+  directly.
+- On Windows, steps 2 and 3 are easier under Linux or WSL: `torch-householder` compiles a
+  C++ extension, which needs the Visual Studio C++ Build Tools.
+- The Weights & Biases logs (`wandb/`) are not included, and no credential is stored in the
+  repository.
 - The joint sheaf diffusion model is not implemented in this public repository; see
   Hernandez Caralt et al. (2024) for details on how to build it. Its archived outputs are on
-  Zenodo, so levels A and B still cover the tables that use it.
+  Zenodo, so steps 1 and 2 still cover the tables that use it.
