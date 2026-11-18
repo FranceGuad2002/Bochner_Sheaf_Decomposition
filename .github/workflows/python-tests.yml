@@ -20,6 +20,8 @@ jobs:
       # torch-householder compiles against torch: build it with the installed CPU
       # torch instead of letting pip download a CUDA build into an isolated sandbox.
       PIP_NO_BUILD_ISOLATION: "0"
+      # torch 1.11 asks for an executable stack, which recent glibc refuses by default.
+      GLIBC_TUNABLES: glibc.rtld.execstack=2
     strategy:
       matrix:
         python-version: [3.9]
