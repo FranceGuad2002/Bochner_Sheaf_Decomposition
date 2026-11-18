@@ -41,10 +41,14 @@ jobs:
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
             hashFiles('environment_cpu.yml') }}
+      - name: pin mkl for torch 1.11
+        # Recent mkl releases are not compatible with torch 1.11. Pin it in a
+        # temporary copy, so that environment_cpu.yml stays the upstream file.
+        run: sed '/- cpuonly/a\  - mkl<2024.1' environment_cpu.yml > ci_environment.yml
       - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: nsd
-          environment-file: environment_cpu.yml
+          environment-file: ci_environment.yml
           python-version: 3.9
           use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
       - name: Test with pytest
