@@ -16,6 +16,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      # torch-householder compiles against torch: build it with the installed CPU
+      # torch instead of letting pip download a CUDA build into an isolated sandbox.
+      PIP_NO_BUILD_ISOLATION: "0"
     strategy:
       matrix:
         python-version: [3.9]
