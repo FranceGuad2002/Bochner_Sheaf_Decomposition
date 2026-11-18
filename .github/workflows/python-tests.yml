@@ -35,16 +35,21 @@ jobs:
         uses: actions/cache@v4
         env:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
-          CACHE_NUMBER: 0
+          CACHE_NUMBER: 1
         with:
           path: ~/conda_pkgs_dir
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
             hashFiles('environment_cpu.yml') }}
-      - name: pin mkl for torch 1.11
-        # Recent mkl releases are not compatible with torch 1.11. Pin it in a
-        # temporary copy, so that environment_cpu.yml stays the upstream file.
-        run: sed '/- cpuonly/a\  - mkl<2024.1' environment_cpu.yml > ci_environment.yml
+      - name: pin the packages that torch 1.11 needs
+        # Recent mkl and numpy releases are not compatible with torch 1.11, and the
+        # CPU build of torch must be the one installed. Pinned in a temporary copy,
+        # so that environment_cpu.yml stays the upstream file.
+        run: |
+          sed -e '/- cpuonly/a\  - mkl<2024.1' \
+              -e '/- cpuonly/a\  - numpy<2' \
+              -e 's/- pytorch=1.11.0/- pytorch=1.11.0=*cpu*/' \
+              environment_cpu.yml > ci_environment.yml
       - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: nsd
