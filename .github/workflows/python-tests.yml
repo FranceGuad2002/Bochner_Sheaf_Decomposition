@@ -61,15 +61,6 @@ jobs:
           environment-file: ci_environment.yml
           python-version: 3.9
           use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
-      - name: Show the installed torch packages
-        if: always()
-        run: |
-          conda activate nsd
-          conda list | grep -i -E "torch|pyg|scatter|sparse|cluster|numpy|mkl|cuda" || true
-          python -c "import torch; print(torch.__version__, torch.version.cuda)" || true
-          python -c "import torch_scatter" || true
-          python -c "import torch_sparse" || true
-          python -c "import torch_geometric" || true
       - name: Test with pytest
         run: |
           conda activate nsd
