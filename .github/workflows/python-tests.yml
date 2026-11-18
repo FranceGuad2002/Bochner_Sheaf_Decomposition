@@ -1,12 +1,13 @@
 name: Build and Test
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
-      - master
+      - main
   push:
     branches:
-      - master
+      - main
   schedule:
     # Run the tests at 00:00 each day
     - cron: "0 0 * * *"
@@ -23,9 +24,9 @@ jobs:
         shell: bash -l {0}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: cache conda
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         env:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
@@ -34,7 +35,7 @@ jobs:
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
             hashFiles('environment_cpu.yml') }}
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: nsd
           environment-file: environment_cpu.yml
