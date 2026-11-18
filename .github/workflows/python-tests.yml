@@ -49,6 +49,11 @@ jobs:
           sed -e '/- cpuonly/a\  - mkl<2024.1' \
               -e '/- cpuonly/a\  - numpy<2' \
               -e 's/- pytorch=1.11.0/- pytorch=1.11.0=*cpu*/' \
+              -e 's/- pyg=2.0.4/- pyg=2.0.4=*cpu*/' \
+              -e '/- cpuonly/a\  - pytorch-scatter=*=*cpu*' \
+              -e '/- cpuonly/a\  - pytorch-sparse=*=*cpu*' \
+              -e '/- cpuonly/a\  - pytorch-cluster=*=*cpu*' \
+              -e '/- cpuonly/a\  - pytorch-spline-conv=*=*cpu*' \
               environment_cpu.yml > ci_environment.yml
       - uses: conda-incubator/setup-miniconda@v3
         with:
