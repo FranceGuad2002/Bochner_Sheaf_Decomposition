@@ -10,7 +10,7 @@ MAP_TYPE="identity"
 CONVICTION_SCORE="last"
 
 echo "=== score=${CONVICTION_SCORE}  intervention=pruning  dataset=tolokers ==="
-python Bochner_code/conviction/conviction_masking_forward.py \
+python src/conviction/conviction_masking_forward.py \
     --model="${MODEL}" \
     --normalised="${NORMALISED}" \
     --map_type="${MAP_TYPE}" \

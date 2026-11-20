@@ -12,7 +12,7 @@ N_BINS=10
 
 MASK_MODES=("zero" "mean")
 CONVICTION_SCORES=("last" "avg" "avg_z")
-DATASETS=()          # empty = every dataset in Bochner_code/conviction/conviction_manifest.txt
+DATASETS=()          # empty = every dataset in src/conviction/conviction_manifest.txt
 
 if [ ${#DATASETS[@]} -eq 0 ]; then
     DATASETS=("")
@@ -27,7 +27,7 @@ for SCORE in "${CONVICTION_SCORES[@]}"; do
             fi
 
             echo "=== score=${SCORE}  intervention=masking  mask_mode=${MODE}  dataset=${DS:-ALL} ==="
-            python Bochner_code/conviction/conviction_masking_decile.py \
+            python src/conviction/conviction_masking_decile.py \
                 --model="${MODEL}" \
                 --normalised="${NORMALISED}" \
                 --map_type="${MAP_TYPE}" \

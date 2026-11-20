@@ -12,15 +12,15 @@ set -e
 sep() { echo; echo "=============================================================="; echo "$1"; echo "=============================================================="; }
 
 sep "[1/4]  Harvest raw per-fold Wasserstein values -> long CSV"
-python Bochner_code/forman_profile/compute_forman_global.py
+python src/forman_profile/compute_forman_global.py
 
 sep "[2/4]  Aggregate -> per-(config, checkpoint, depth-bin) mean +/- SE"
-python Bochner_code/forman_profile/aggregate_forman_global.py
+python src/forman_profile/aggregate_forman_global.py
 
 sep "[3/4]  Emit the 8 global LaTeX tables"
-python Bochner_code/forman_profile/generate_forman_tables.py
+python src/forman_profile/generate_forman_tables.py
 
 sep "[4/4]  Per-dataset tables: per-fold CSV -> 3 LaTeX tables"
-python Bochner_code/forman_profile/make_forman_perdataset_tables.py --from_eigs
+python src/forman_profile/make_forman_perdataset_tables.py --from_eigs
 
 sep "All done."

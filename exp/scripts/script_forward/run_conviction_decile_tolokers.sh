@@ -11,7 +11,7 @@ CONVICTION_SCORE="last"
 N_BINS=10
 
 echo "=== score=${CONVICTION_SCORE}  intervention=pruning  dataset=tolokers ==="
-python Bochner_code/conviction/conviction_masking_decile.py \
+python src/conviction/conviction_masking_decile.py \
     --model="${MODEL}" \
     --normalised="${NORMALISED}" \
     --map_type="${MAP_TYPE}" \

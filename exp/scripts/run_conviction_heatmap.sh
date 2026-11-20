@@ -9,9 +9,9 @@
 #
 # One invocation of conviction_heatmap.py per configuration. Each writes, for
 # every dataset it discovers:
-#     Bochner_code/conviction/outputs/observational_figures/conviction_heatmap/<model>/normalised_<x>/*.pdf
-#     Bochner_code/conviction/outputs/observational_figures/conviction_scatter/<model>/normalised_<x>/*.pdf
-#     Bochner_code/conviction/outputs/per_dataset_tables/observational/<model>/normalised_<x>/*_observational_folds.csv
+#     src/conviction/outputs/observational_figures/conviction_heatmap/<model>/normalised_<x>/*.pdf
+#     src/conviction/outputs/observational_figures/conviction_scatter/<model>/normalised_<x>/*.pdf
+#     src/conviction/outputs/per_dataset_tables/observational/<model>/normalised_<x>/*_observational_folds.csv
 # The PDFs overwrite the existing ones under identical filenames; the CSVs are
 # the new part, holding the Spearman/Cohen's-d values one row per fold, before
 # the fold averaging the heatmap does. conviction_observational_table.py then
@@ -41,7 +41,7 @@ EXCLUDE_DATASETS="cornell,wisconsin"
 CHECKPOINTS="epoch-0,best-epoch"
 LAYER="last"
 
-OUT_DIR="Bochner_code/conviction/outputs/summary_tables"
+OUT_DIR="src/conviction/outputs/summary_tables"
 
 # ── 1. per-dataset heatmaps, scatters and per-fold CSVs ────────────────────────
 for CONFIG in "${CONFIGS[@]}"; do
@@ -51,7 +51,7 @@ for CONFIG in "${CONFIGS[@]}"; do
     echo "=============================================================="
     echo "  conviction_heatmap: model=${MODEL}  normalised=${NORMALISED}"
     echo "=============================================================="
-    python Bochner_code/conviction/conviction_heatmap.py \
+    python src/conviction/conviction_heatmap.py \
         --model="${MODEL}" \
         --normalised="${NORMALISED}" \
         --map_type="${MAP_TYPE}"
@@ -62,7 +62,7 @@ echo
 echo "=============================================================="
 echo "  conviction_observational_table"
 echo "=============================================================="
-python Bochner_code/conviction/conviction_observational_table.py \
+python src/conviction/conviction_observational_table.py \
     --configs="$(IFS=,; echo "${CONFIGS[*]}")" \
     --checkpoints="${CHECKPOINTS}" \
     --layer="${LAYER}" \
@@ -71,6 +71,6 @@ python Bochner_code/conviction/conviction_observational_table.py \
 
 echo
 echo "Done."
-echo "  Heatmaps/scatters: Bochner_code/conviction/outputs/observational_figures/"
-echo "  Per-fold CSVs:     Bochner_code/conviction/outputs/per_dataset_tables/observational/"
+echo "  Heatmaps/scatters: src/conviction/outputs/observational_figures/"
+echo "  Per-fold CSVs:     src/conviction/outputs/per_dataset_tables/observational/"
 echo "  Table:             ${OUT_DIR}/observational_summary.tex"

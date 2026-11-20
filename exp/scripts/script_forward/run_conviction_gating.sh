@@ -11,7 +11,7 @@ MAP_TYPE="identity"
 
 GATE_MODES=("hard" "soft")
 CONVICTION_SCORES=("last")
-DATASETS=()          # empty = every dataset in Bochner_code/conviction/conviction_manifest.txt
+DATASETS=()          # empty = every dataset in src/conviction/conviction_manifest.txt
 
 if [ ${#DATASETS[@]} -eq 0 ]; then
     DATASETS=("")
@@ -26,7 +26,7 @@ for SCORE in "${CONVICTION_SCORES[@]}"; do
             fi
 
             echo "=== score=${SCORE}  intervention=gating  gate_mode=${MODE}  dataset=${DS:-ALL} ==="
-            python Bochner_code/conviction/conviction_masking_forward.py \
+            python src/conviction/conviction_masking_forward.py \
                 --model="${MODEL}" \
                 --normalised="${NORMALISED}" \
                 --map_type="${MAP_TYPE}" \

@@ -30,7 +30,7 @@ Sheaf Laplacians, Curvature and Neural Sheaf Diffusion*.
 > profile provides a local descriptor of the learnt operator.
 
 <p align="center">
-  <img src="Bochner_code/figures/random_walk_gremban.png" alt="The random walk of a Bochner matrix as a generalized Gremban expansion" width="720">
+  <img src="src/figures/random_walk_gremban.png" alt="The random walk of a Bochner matrix as a generalized Gremban expansion" width="720">
 </p>
 
 *The random walk of a Bochner matrix as a generalized Gremban expansion (Figure 2 of the
@@ -42,14 +42,13 @@ carries.*
 This repository is a fork of [Neural Sheaf Diffusion](https://github.com/twitter-research/neural-sheaf-diffusion)
 (Bodnar et al., NeurIPS 2022). We keep their models and training loop, and add what is
 needed to look inside a trained network, together with the two experiments of the paper.
-Their original README is kept, unchanged, at the [end of this page](#original-neural-sheaf-diffusion-readme).
 
 ## Getting started
 
 To get the environment we used:
 
 ```bash
-conda env create -f Bochner_code/environments/environment_nsd_exact.yml
+conda env create -f src/environments/environment_nsd_exact.yml
 conda activate nsd
 ```
 
@@ -58,7 +57,7 @@ Without CUDA, use the upstream environment and add the analysis packages:
 ```bash
 conda env create -f environment_cpu.yml
 conda activate nsd
-pip install -r Bochner_code/requirements-analysis.txt
+pip install -r src/requirements-analysis.txt
 ```
 
 Training logs go to Weights & Biases; if you don't have an account, run
@@ -83,21 +82,21 @@ python -m exp.run --dataset=cornell --model=GeneralSheaf --normalised=True \
 ## Reproducing the paper
 
 There are three ways in, depending on how far back you want to go. The full guide is in
-[`Bochner_code/README.md`](Bochner_code/README.md).
+[`src/README.md`](src/README.md).
 
 1. **Regenerate the tables.** All 23 tables of the paper can be rebuilt from the per-fold
    data committed here, with four pip packages.
 2. **Rerun the analysis.** The raw outputs of the trained models are on
    [Zenodo](https://doi.org/10.5281/zenodo.23080428) (6.8 GB). Unpack them at the root of
    the repository and run the analysis scripts.
-3. **Retrain the models.** [`Bochner_code/TRAINING_RUNS.md`](Bochner_code/TRAINING_RUNS.md)
+3. **Retrain the models.** [`src/TRAINING_RUNS.md`](src/TRAINING_RUNS.md)
    lists every trained model with the exact command that produced it, and
    `exp/scripts/paper/` collects them in scripts.
 
 ## Layout
 
 ```
-Bochner_code/              everything specific to the paper (start here)
+src/              everything specific to the paper (start here)
   conviction/              node importance in a trained network (Bochner term)
   forman_profile/          spectra of the curvature blocks (Forman term)
   TRAINING_RUNS.md         every trained model, with its command
@@ -138,100 +137,8 @@ If you find this work useful, please cite:
 }
 ```
 
-Please also cite Neural Sheaf Diffusion, whose citation is in the original README below.
+Please also cite [Neural Sheaf Diffusion](https://arxiv.org/abs/2202.04579) (Bodnar et al., NeurIPS 2022), on which this code is built.
 
 ## License
 
 Apache 2.0, the same as Neural Sheaf Diffusion; see [`LICENSE`](LICENSE).
-
----
-
-## Original Neural Sheaf Diffusion README
-
-*Kept unchanged from [twitter-research/neural-sheaf-diffusion](https://github.com/twitter-research/neural-sheaf-diffusion).*
-
-[![example workflow](https://github.com/twitter-research/neural-sheaf-diffusion/actions/workflows/python-tests.yml/badge.svg)](https://github.com/twitter-research/neural-sheaf-diffusion/actions) 
-[![License: MIT](https://img.shields.io/badge/License-Apache%202-green.svg)](https://github.com/twitter-research/neural-sheaf-diffusion/blob/main/LICENSE)
-
-# Neural Sheaf Diffusion
-
-This repository contains the official code for the paper 
-**[Neural Sheaf Diffusion: A Topological Perspective on Heterophily and Oversmoothing in GNNs](https://arxiv.org/abs/2202.04579) (NeurIPS 2022)**.
-
-![Sheaf Neural Networks](figures/sheaf.png)
-
-## Getting started
-
-We used `CUDA 10.2` for this project. To set up the environment, run the following command:
-
-```bash
-conda env create --file=environment_gpu.yml
-conda activate nsd
-```
-For using another `CUDA` version, modify the version specified inside `environment_gpu.yml`. If you like to run 
-the code in a CPU-only environment, then use `environment_cpu`. 
-
-To make sure that everything is set up correctly, you can run all the tests using:
-```bash
-pytest -v .
-```
-
-## Running experiments
-
-To run the experiments without a Weights & Biases (wandb) account, first disable `wandb` by running `wandb disabled`. 
-Then, for instance, to run the training procedure on `texas`, simply run the example script provided:
-```commandline
-sh ./exp/scripts/run_texas.sh
-```
-
-To run the experiments using `wandb`, first create a [Weights & Biases account](https://wandb.ai/site). Then run the following
-commands to log in and follow the displayed instructions:
-```bash
-wandb online
-wandb login
-```
-Then, you can run the example training procedure on `texas` via:
-```bash
-export ENTITY=<WANDB_ACCOUNT_ID>
-sh ./exp/scripts/run_texas.sh
-```
-Scripts for the other heterophilic datasets are also provided in `exp/scripts`. 
-
-### Hyperparameter Sweeps
-
-To run a hyperparameter sweep, you will need a `wandb` account. Once you have an account, you can run an example
-sweep as follows:
-```bash
-export ENTITY=<WANDB_ACCOUNT_ID>
-wandb sweep --project sheaf config/orth_webkb_sweep.yml
-```
-This will set up the sweep for a discrete bundle model on the WebKB datasets 
-as described in the yaml config at `config/orth_webkb_sweep.yml`.
-
-To run the sweep on a single GPU, simply run the command displayed on screen after running the sweep command above. 
-If you like to run the sweep on multiple GPUs, then run the following command by typing in the `SWEEP_ID` received above.
-```bash
-sh run_sweeps.sh <SWEEP_ID>
-```
-### Datasets
-
-The WebKB (`texas`, `wisconsin`, `cornell`) and `film` datasets are downloaded on the fly. The
-[WikipediaNetwork datasets](https://academic.oup.com/comnet/article/9/2/cnab014/6271062) with the Geom-GCN pre-processing 
-can be downloaded from the [Geom-GCN repo](https://github.com/graphdml-uiuc-jlu/geom-gcn/tree/f1fc0d14b3b019c562737240d06ec83b07d16a8f/new_data).
-The files for the Planetoid datasets can also be found in the [Geom-GCN repo](https://github.com/graphdml-uiuc-jlu/geom-gcn/tree/master/data). 
-The downloaded files must be placed into `datasets/<DATASET_NAME>/raw/`.
-
-## Credits
-
-For attribution in academic contexts, please use the bibtex entry below:
-```
-@inproceedings{
- bodnar2022neural,
- title={Neural Sheaf Diffusion: A Topological Perspective on Heterophily and Oversmoothing in {GNN}s},
- author={Cristian Bodnar and Francesco Di Giovanni and Benjamin Paul Chamberlain and Pietro Li{\`o} and Michael M. Bronstein},
- booktitle={Advances in Neural Information Processing Systems},
- editor={Alice H. Oh and Alekh Agarwal and Danielle Belgrave and Kyunghyun Cho},
- year={2022},
- url={https://openreview.net/forum?id=vbPsD-BhOZ}
-}
-```

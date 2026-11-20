@@ -5,16 +5,16 @@
 # given score, so only the score is looped over here.
 #
 # Reads only the committed per-fold CSVs under
-# Bochner_code/conviction/outputs/per_dataset_tables/ — no
+# src/conviction/outputs/per_dataset_tables/ — no
 # model, no GPU, finishes in seconds. Run from the repo root:
 #     bash exp/scripts/run_conviction_summary.sh
 #
 # Gating and pruning were swept at score=last only, so the avg and avg_z
 # summary tables contain masking rows only — expected, not a bug.
 #
-# Output goes to Bochner_code/conviction/outputs/summary_tables/
+# Output goes to src/conviction/outputs/summary_tables/
 # — a flat folder holding exactly the fragments inlined into
-# Bochner_code/paper/paper.tex.
+# src/paper/paper.tex.
 #
 # --exclude is what makes these the 8-dataset aggregation the paper reports.
 # Running conviction_summary_tables.py without it aggregates all 10 datasets
@@ -30,7 +30,7 @@ SCORES=("last" "avg" "avg_z")
 # that a 1% budget is a single node and a decile bin is under ten nodes.
 EXCLUDE_DATASETS="cornell,wisconsin"
 
-OUT_DIR="Bochner_code/conviction/outputs/summary_tables"
+OUT_DIR="src/conviction/outputs/summary_tables"
 
 # The script prints non-ASCII characters; without this a Windows console
 # (cp1252) aborts with UnicodeEncodeError.
@@ -38,7 +38,7 @@ export PYTHONUTF8=1
 
 for SCORE in "${SCORES[@]}"; do
     echo "=== summarising score=${SCORE} ==="
-    python Bochner_code/conviction/conviction_summary_tables.py \
+    python src/conviction/conviction_summary_tables.py \
         --score="${SCORE}" \
         --model="${MODEL}" \
         --normalised="${NORMALISED}" \

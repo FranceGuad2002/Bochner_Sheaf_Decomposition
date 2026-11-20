@@ -14,7 +14,7 @@ DATASETS=("amazon_ratings" "citeseer" "cora" "cornell" "minesweeper" "pubmed" "q
 
 for DS in "${DATASETS[@]}"; do
     echo "=== score=${CONVICTION_SCORE}  intervention=pruning  dataset=${DS} ==="
-    python Bochner_code/conviction/conviction_masking_forward.py \
+    python src/conviction/conviction_masking_forward.py \
         --model="${MODEL}" \
         --normalised="${NORMALISED}" \
         --map_type="${MAP_TYPE}" \

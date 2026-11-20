@@ -3,7 +3,7 @@ Shared conviction utilities: locating a fold's scoring checkpoint, computing its
 conviction ranking, and applying the three Phase-2 interventions (node pruning,
 feature masking, message gating) to a Data object.
 
-Used by the scripts in Bochner_code/conviction/, so every
+Used by the scripts in src/conviction/, so every
 intervention locates checkpoints and ranks nodes the exact same way.
 """
 
@@ -582,7 +582,7 @@ def load_manifest(manifest_path=None):
     Replaces discover_experiments' glob walk over results/model_weights/ — the
     set of trained models is small and known, so it's edited by hand instead
     of rediscovered on every run."""
-    path = manifest_path or os.path.join(ROOT_DIR, 'Bochner_code',
+    path = manifest_path or os.path.join(ROOT_DIR, 'src',
                                          'conviction', 'conviction_manifest.txt')
     rows = []
     with open(path) as f:

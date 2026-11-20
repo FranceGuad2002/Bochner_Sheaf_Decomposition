@@ -1,6 +1,6 @@
 #!/bin/bash
 # Trains the 10 models the conviction experiments load.
-# Generated from Bochner_code/TRAINING_RUNS.md — see it for where each
+# Generated from src/TRAINING_RUNS.md — see it for where each
 # command comes from. Run from the repository root, with the environment active:
 #     bash exp/scripts/paper/train_conviction_models.sh
 # Each run is 10-fold cross-validation; the large datasets need a GPU.
