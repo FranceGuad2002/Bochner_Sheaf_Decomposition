@@ -33,7 +33,7 @@ stop with `FileNotFoundError`. Linux and macOS are not affected.
 ## 1. Regenerate the tables
 
 The per-fold data the tables are computed from is committed under `*/outputs/`, so all you
-need is Python 3.9 or later and four packages:
+need is Python 3.9 to 3.12 and four packages:
 
 ```bash
 pip install -r src/requirements-tables.txt
@@ -63,7 +63,7 @@ tells you which file is which table.
 | Setup | Command |
 |---|---|
 | the environment we used | `conda env create -f src/environments/environment_nsd_exact.yml` (Python 3.9.9, torch 2.5.1 with CUDA 12.1, PyG 2.6.1) |
-| without CUDA | the upstream environment plus the analysis libraries:<br>`conda env create -f environment_cpu.yml`<br>`conda activate nsd`<br>`pip install -r src/requirements-analysis.txt` |
+| without CUDA | the CPU environment plus the analysis libraries:<br>`conda env create -f src/environments/environment_cpu.yml`<br>`conda activate nsd`<br>`pip install -r src/requirements-analysis.txt` |
 
 Both create an environment called `nsd`. Training logs go to Weights & Biases; without an
 account, run `export WANDB_MODE=disabled` first.
@@ -145,7 +145,7 @@ spread across folds.
 
 ### Forman profile
 
-The tables are written to `forman_profile/outputs/summary_tables/`.
+The tables are written to `src/forman_profile/outputs/summary_tables/`.
 
 | Table in the paper | File | Script |
 |---|---|---|
@@ -163,7 +163,7 @@ The tables are written to `forman_profile/outputs/summary_tables/`.
 
 ### Conviction
 
-The tables are written to `conviction/outputs/summary_tables/`.
+The tables are written to `src/conviction/outputs/summary_tables/`.
 
 | Table in the paper | File | Script |
 |---|---|---|
@@ -193,8 +193,8 @@ diagrams, and no code produces them.
   `--exclude=cornell,wisconsin` flag that does this is set in
   `exp/scripts/run_conviction_summary.sh`, so call that script rather than the Python file
   directly.
-- On Windows, steps 2 and 3 are easier under Linux or WSL: `torch-householder` compiles a
-  C++ extension, which needs the Visual Studio C++ Build Tools.
+- On Windows, use Linux or WSL for steps 2 and 3: `torch-householder` compiles a
+  C++ extension that does not build reliably there. Step 1 runs on Windows as it is.
 - The Weights & Biases logs (`wandb/`) are not included, and no credential is stored in the
   repository.
 - The joint sheaf diffusion model is not implemented in this public repository; see

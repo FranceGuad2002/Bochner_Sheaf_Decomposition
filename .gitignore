@@ -28,3 +28,6 @@ results/*
 # ── figures the analysis scripts render ───────────────────────────────────────
 # Diagnostic plots; the paper uses none of them (its figures are theory diagrams).
 src/*/outputs/**/*.pdf
+
+# Archives downloaded from Zenodo
+*.tar

@@ -52,10 +52,10 @@ conda env create -f src/environments/environment_nsd_exact.yml
 conda activate nsd
 ```
 
-Without CUDA, use the upstream environment and add the analysis packages:
+Without CUDA, use the CPU environment (the upstream one with the pins that make it install today) and add the analysis packages:
 
 ```bash
-conda env create -f environment_cpu.yml
+conda env create -f src/environments/environment_cpu.yml
 conda activate nsd
 pip install -r src/requirements-analysis.txt
 ```
@@ -65,7 +65,7 @@ Training logs go to Weights & Biases; if you don't have an account, run
 
 On Windows, clone the repository into a short folder such as `C:\nsd`
 (`git clone -c core.longpaths=true <url> C:\nsd`): some paths are long, and Windows refuses
-paths over 260 characters by default.
+paths over 260 characters by default. Training or loading a model also needs `torch-householder`, which compiles a C++ extension and is only practical on Linux or WSL; regenerating the tables works on Windows as it is.
 
 ## Quick start
 

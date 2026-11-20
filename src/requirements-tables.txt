@@ -1,5 +1,5 @@
 # Enough to regenerate every table in the paper from the committed CSVs
-# (src/README.md, level A). No torch, no GPU.
+# (src/README.md, step 1). No torch, no GPU.
 #     pip install -r src/requirements-tables.txt
 numpy==1.26.4
 pandas==2.3.1
