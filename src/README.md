@@ -194,7 +194,9 @@ diagrams, and no code produces them.
   `exp/scripts/run_conviction_summary.sh`, so call that script rather than the Python file
   directly.
 - On Windows, use Linux or WSL for steps 2 and 3: `torch-householder` compiles a
-  C++ extension that does not build reliably there. Step 1 runs on Windows as it is.
+  C++ extension that does not build reliably there. Step 1 runs on Windows as it is. On a
+  fresh Linux or WSL install, first install a C++ compiler (for example
+  `sudo apt install build-essential`), because that extension needs `g++`.
 - The Weights & Biases logs (`wandb/`) are not included, and no credential is stored in the
   repository.
 - The joint sheaf diffusion model is not implemented in this public repository; see
