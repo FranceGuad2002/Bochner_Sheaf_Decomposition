@@ -13,8 +13,7 @@
 # summary tables contain masking rows only — expected, not a bug.
 #
 # Output goes to src/conviction/outputs/summary_tables/
-# — a flat folder holding exactly the fragments inlined into
-# src/paper/paper.tex.
+# — a flat folder holding exactly the table fragments of the paper.
 #
 # --exclude is what makes these the 8-dataset aggregation the paper reports.
 # Running conviction_summary_tables.py without it aggregates all 10 datasets

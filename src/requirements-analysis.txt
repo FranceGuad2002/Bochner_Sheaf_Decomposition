@@ -1,7 +1,6 @@
-# Libraries the paper's analysis needs on top of the upstream environment
-# (environment_cpu.yml / environment_gpu.yml in the repository root, left as
-# in twitter-research/neural-sheaf-diffusion). See src/README.md.
-#     conda env create -f environment_cpu.yml
+# Libraries the paper's analysis needs on top of the CPU environment
+# (src/environments/environment_cpu.yml). See src/README.md.
+#     conda env create -f src/environments/environment_cpu.yml
 #     conda activate nsd
 #     pip install -r src/requirements-analysis.txt
 numpy==1.26.4
