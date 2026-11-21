@@ -114,7 +114,8 @@ def test_permutation_equivariance_of_diag_sheaf_diffusion_on_texas(d, normalised
             model.update_edge_index(perm_data.edge_index)
             perm_out = model(perm_data.x)
 
-        assert torch.allclose(out, perm_out, atol=1e-5)
+        # Unnormalised outputs reach about 1e3, so float32 rounding differs across CPUs.
+        assert torch.allclose(out, perm_out, atol=1e-3, rtol=1e-4)
 
 
 @pytest.mark.parametrize("d, orth", [(2, "euler"), (3, "euler"), (5, "matrix_exp"), (6, "cayley"), (7, "householder")])
